@@ -16,17 +16,15 @@
 
         #mainApp { display: none; }
 
-        /* HEADER SECTION */
         .firm-header { text-align: center; background: var(--primary); color: white; padding: 15px; border-radius: 10px 10px 0 0; margin: -15px -15px 0 -15px; }
         .firm-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; font-weight: 800; }
         
-        /* DEPOT NAME - YAHAN FIX KIYA HAI */
-        .depot-label { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 8px; margin: 0 -15px 15px -15px; font-weight: 800; font-size: 15px; border-bottom: 2px solid #1a73e8; letter-spacing: 1px; }
+        /* UPDATED DEPOT NAME WITH ATTENDANCE WORD */
+        .depot-label { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 8px; margin: 0 -15px 15px -15px; font-weight: 800; font-size: 14px; border-bottom: 2px solid #1a73e8; letter-spacing: 0.5px; }
 
         .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 15px; padding-bottom: 10px; font-weight: bold; }
         #dateStr { font-size: 15px; color: #202124; }
 
-        /* CARD STYLES */
         .staff-card { border: 1px solid #dadce0; padding: 12px; border-radius: 10px; margin-bottom: 10px; background: #fff; transition: 0.2s; }
         .card-absent { border: 2.5px solid var(--danger) !important; background-color: #fff5f5 !important; }
         .card-absent .staff-name { color: var(--danger) !important; }
@@ -45,7 +43,7 @@
 <div class="container">
     <div id="loginScreen">
         <h2 style="color: #1a73e8;">NORTHERN GOODS CARRIER</h2>
-        <p>Varanasi Depot Attendance</p>
+        <p>Varanasi Depot Access</p>
         <input type="password" id="pinEntry" class="pin-input" placeholder="****" maxlength="4" inputmode="numeric">
         <br>
         <button class="login-btn" onclick="checkPin()">Unlock App</button>
@@ -53,7 +51,7 @@
 
     <div id="mainApp">
         <div class="firm-header"><h1>NORTHERN GOODS CARRIER</h1></div>
-        <div class="depot-label">VARANASI DEPOT</div>
+        <div class="depot-label">VARANASI DEPOT ATTENDANCE</div>
         
         <div class="header"><div id="dateStr"></div></div>
         <div id="staffContainer"></div>
@@ -122,23 +120,18 @@
 
     function sendToWhatsApp() {
         let dayStr = document.getElementById('dateStr').innerText;
-        // WhatsApp Report Header
-        let message = `*NORTHERN GOODS CARRIER*%0A*Depot:* VARANASI DEPOT%0A*Date:* ${dayStr}%0A----------------------------%0A%0A`;
+        let message = `*NORTHERN GOODS CARRIER*%0A*Depot:* VARANASI DEPOT ATTENDANCE%0A*Date:* ${dayStr}%0A----------------------------%0A%0A`;
         
         employees.forEach(name => {
             let d = attendance[name];
             let statusText = d.status.toUpperCase();
             let tInfo = (d.status === "Present" || d.status === "Half-Day") ? ` (${d.time})` : "";
-            
-            let colorIcon = "";
-            if(d.status === "Absent") colorIcon = "🔴 ";
-            else if(d.status === "Half-Day") colorIcon = "🟡 ";
+            let colorIcon = (d.status === "Absent") ? "🔴 " : (d.status === "Half-Day") ? "🟡 " : "";
             
             message += `${colorIcon}*${name.toUpperCase()}*: ${statusText}${tInfo}%0A`;
         });
         
         message += `%0A----------------------------%0A`;
-        message += `Generated via NGC Varanasi App`;
         window.open(`https://wa.me/?text=${message}`, '_blank');
     }
 
