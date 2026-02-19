@@ -3,70 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firm Attendance Pro</title>
+    <title>Firm Attendance Pro + Time</title>
     <link rel="manifest" href="manifest.json">
     <style>
         :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --warning: #f9ab00; }
-        body { font-family: sans-serif; background: #f1f3f4; margin: 0; padding: 15px; }
-        .container { max-width: 450px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        body { font-family: sans-serif; background: #f1f3f4; margin: 0; padding: 15px; color: #3c4043; }
+        .container { max-width: 450px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 20px; padding-bottom: 10px; }
+        h2 { margin: 0; color: #202124; }
+        #dateStr { font-size: 14px; color: #70757a; margin-top: 5px; }
+
         .add-staff-box { display: flex; gap: 5px; margin-bottom: 20px; background: #f8f9fa; padding: 10px; border-radius: 5px; }
         input { flex: 1; padding: 10px; border: 1px solid #dadce0; border-radius: 4px; outline: none; }
         .add-btn { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
         .staff-card { border-bottom: 1px solid #f1f3f4; padding: 15px 0; }
-        .staff-name { font-weight: 500; font-size: 16px; margin-bottom: 10px; display: block; }
+        .staff-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .staff-name { font-weight: 600; font-size: 16px; }
+        .punch-time { font-size: 12px; color: #1a73e8; font-weight: bold; background: #e8f0fe; padding: 2px 6px; border-radius: 4px; }
+        
         .btn-group { display: flex; gap: 5px; }
-        .status-btn { flex: 1; padding: 10px; border: 1px solid #dadce0; border-radius: 4px; cursor: pointer; background: white; font-size: 11px; font-weight: bold; }
-        .p-active { background: var(--success) !important; color: white !important; }
-        .h-active { background: var(--warning) !important; color: white !important; }
-        .a-active { background: var(--danger) !important; color: white !important; }
-        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 16px; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 25px; }
+        .status-btn { flex: 1; padding: 12px; border: 1px solid #dadce0; border-radius: 6px; cursor: pointer; background: white; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+
+        .p-active { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+        .h-active { background: var(--warning) !important; color: white !important; border-color: var(--warning) !important; }
+        .a-active { background: var(--danger) !important; color: white !important; border-color: var(--danger) !important; }
+
+        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
+
 <div class="container">
-    <div class="header"><h2>ATTENDANCE ADMIN</h2><div id="dateStr"></div></div>
+    <div class="header">
+        <h2>FIRM ATTENDANCE</h2>
+        <div id="dateStr"></div>
+    </div>
+
     <div class="add-staff-box">
         <input type="text" id="newStaffName" placeholder="Staff ka Naam...">
         <button class="add-btn" onclick="addNewStaff()">ADD</button>
     </div>
+
     <div id="staffContainer"></div>
-    <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share on WhatsApp</button>
+
+    <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report with Time</button>
 </div>
+
 <script>
     let employees = ["Shanu Yadav"]; 
     let attendance = {};
+
     function init() {
-        document.getElementById('dateStr').innerText = new Date().toLocaleDateString();
+        document.getElementById('dateStr').innerText = new Date().toLocaleDateString('hi-IN', { weekday: 'long', day: '2-digit', month: 'short' });
         renderList();
     }
+
     function renderList() {
         const container = document.getElementById('staffContainer');
         container.innerHTML = '';
+        
         employees.forEach(name => {
-            if (!attendance[name]) attendance[name] = "Absent";
+            if (!attendance[name]) {
+                attendance[name] = { status: "Absent", time: "--:--" };
+            }
+            
             const card = document.createElement('div');
             card.className = 'staff-card';
-            card.innerHTML = `<span class="staff-name">${name}</span><div class="btn-group">
-                <button class="status-btn ${attendance[name] === 'Present' ? 'p-active' : ''}" onclick="mark('${name}', 'Present')">Present</button>
-                <button class="status-btn ${attendance[name] === 'Half-Day' ? 'h-active' : ''}" onclick="mark('${name}', 'Half-Day')">Half-Day</button>
-                <button class="status-btn ${attendance[name] === 'Absent' ? 'a-active' : ''}" onclick="mark('${name}', 'Absent')">Absent</button>
-            </div>`;
+            card.innerHTML = `
+                <div class="staff-info">
+                    <span class="staff-name">${name}</span>
+                    <span class="punch-time">${attendance[name].time}</span>
+                </div>
+                <div class="btn-group">
+                    <button class="status-btn ${attendance[name].status === 'Present' ? 'p-active' : ''}" onclick="mark('${name}', 'Present')">Present</button>
+                    <button class="status-btn ${attendance[name].status === 'Half-Day' ? 'h-active' : ''}" onclick="mark('${name}', 'Half-Day')">Half-Day</button>
+                    <button class="status-btn ${attendance[name].status === 'Absent' ? 'a-active' : ''}" onclick="mark('${name}', 'Absent')">Absent</button>
+                </div>
+            `;
             container.appendChild(card);
         });
     }
+
     function addNewStaff() {
         const input = document.getElementById('newStaffName');
         const name = input.value.trim();
-        if (name && !employees.includes(name)) { employees.push(name); renderList(); input.value = ''; }
+        if (name && !employees.includes(name)) {
+            employees.push(name);
+            renderList();
+            input.value = '';
+        }
     }
-    function mark(name, status) { attendance[name] = status; renderList(); }
+
+    function mark(name, status) {
+        let currentTime = "--:--";
+        if (status !== "Absent") {
+            const now = new Date();
+            currentTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        attendance[name] = { status: status, time: currentTime };
+        renderList();
+    }
+
     function sendToWhatsApp() {
-        let message = `ATTENDANCE REPORT%0A%0A`;
-        employees.forEach(name => { message += `${name.toUpperCase()}: ${attendance[name].toUpperCase()}%0A`; });
+        let message = `*FIRM ATTENDANCE REPORT*%0A`;
+        message += `*Date:* ${new Date().toLocaleDateString()}%0A`;
+        message += `----------------------------%0A%0A`;
+        
+        employees.forEach(name => {
+            let data = attendance[name];
+            let timeStr = data.status !== "Absent" ? ` (Time: ${data.time})` : "";
+            message += `*${name.toUpperCase()}*: ${data.status.toUpperCase()}${timeStr}%0A`;
+        });
+
+        message += `%0A----------------------------%0A`;
+        message += `Generated by My Firm App`;
+
         window.open(`https://wa.me/?text=${message}`, '_blank');
     }
+
     init();
 </script>
+
 </body>
 </html>
