@@ -6,40 +6,50 @@
     <title>NORTHERN GOODS CARRIER</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        :root { --primary: #1a73e8; --success: #202124; --danger: #d93025; --warning: #f9ab00; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f3f4; margin: 0; padding: 10px; color: #3c4043; }
-        .container { max-width: 450px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
+        :root { --danger: #d93025; --warning: #f9ab00; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f3f4; margin: 0; padding: 10px; }
+        .container { max-width: 450px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         
+        /* Login Style */
         #loginScreen { text-align: center; padding: 40px 20px; }
-        .pin-input { width: 80%; padding: 15px; font-size: 24px; text-align: center; border: 2px solid #dadce0; border-radius: 8px; margin-bottom: 20px; letter-spacing: 10px; outline: none; }
-        .login-btn { width: 80%; background: #1a73e8; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .pin-input { width: 80%; padding: 15px; font-size: 24px; text-align: center; border: 2px solid #dadce0; border-radius: 8px; margin-bottom: 20px; outline: none; }
+        .login-btn { width: 80%; background: #1a73e8; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         #mainApp { display: none; }
 
         .firm-header { text-align: center; background: #1a73e8; color: white; padding: 15px; border-radius: 10px 10px 0 0; margin: -15px -15px 0 -15px; }
-        .firm-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; font-weight: 800; }
-        .depot-header { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 5px; margin: 0 -15px 15px -15px; font-weight: bold; font-size: 14px; border-bottom: 1px solid #dadce0; }
+        .depot-header { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 5px; margin: 0 -15px 15px -15px; font-weight: bold; border-bottom: 1px solid #dadce0; }
+        .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 10px; padding-bottom: 10px; font-weight: bold; }
 
-        .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 10px; padding-bottom: 10px; }
-        #dateStr { font-size: 15px; font-weight: bold; color: #202124; }
-        
-        /* CARD STYLES */
+        /* Color Coding for Cards */
         .staff-card { 
             border: 1px solid #dadce0; 
             padding: 12px; 
             border-radius: 10px; 
             margin-bottom: 10px; 
-            transition: 0.2s;
+            background: #fff;
         }
-        
-        /* Specific Colors */
-        .card-absent { border: 2px solid var(--danger) !important; color: var(--danger) !important; background-color: #fff5f5; }
-        .card-halfday { border: 2px solid var(--warning) !important; color: #856404 !important; background-color: #fffdf0; }
-        .card-present { border: 1px solid #dadce0; color: #202124; background-color: #ffffff; }
 
-        .staff-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; }
+        /* Absent Status - RED */
+        .card-absent { 
+            border: 2px solid var(--danger) !important; 
+            background-color: #fff5f5 !important; 
+        }
+        .card-absent .staff-name { color: var(--danger) !important; }
+
+        /* Half-Day Status - YELLOW */
+        .card-halfday { 
+            border: 2px solid var(--warning) !important; 
+            background-color: #fffdf0 !important; 
+        }
+        .card-halfday .staff-name { color: #856404 !important; }
+
+        /* Present Status - Normal Black */
+        .card-present { border: 1px solid #dadce0; background: #fff; }
+
+        .staff-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; color: #202124; }
         .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .status-select, .time-input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; outline: none; width: 100%; box-sizing: border-box; color: inherit; }
+        .status-select, .time-input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; width: 100%; box-sizing: border-box; }
         
         .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 10px; cursor: pointer; }
     </style>
@@ -49,9 +59,7 @@
 <div class="container">
     <div id="loginScreen">
         <h2 style="color: #1a73e8;">NORTHERN GOODS CARRIER</h2>
-        <p>Enter PIN to Access</p>
-        <input type="password" id="pinEntry" class="pin-input" placeholder="****" maxlength="4" inputmode="numeric">
-        <br>
+        <input type="password" id="pinEntry" class="pin-input" placeholder="Enter PIN" maxlength="4" inputmode="numeric">
         <button class="login-btn" onclick="checkPin()">Unlock App</button>
     </div>
 
@@ -120,7 +128,7 @@
     function updateTime(n, v) { attendance[n].time = v; }
     function updateStatus(n, v) { 
         attendance[n].status = v; 
-        renderList(); 
+        renderList(); // Jaise hi status badlega, list refresh hogi aur color lag jayega
     }
 
     function sendToWhatsApp() {
