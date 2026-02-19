@@ -1,4 +1,118 @@
-function sendToWhatsApp() {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NORTHERN GOODS CARRIER</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root { --danger: #d93025; --warning: #f9ab00; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f3f4; margin: 0; padding: 10px; }
+        .container { max-width: 450px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        #loginScreen { text-align: center; padding: 40px 20px; }
+        .pin-input { width: 80%; padding: 15px; font-size: 24px; text-align: center; border: 2px solid #dadce0; border-radius: 8px; margin-bottom: 20px; outline: none; }
+        .login-btn { width: 80%; background: #1a73e8; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        #mainApp { display: none; }
+
+        .firm-header { text-align: center; background: #1a73e8; color: white; padding: 15px; border-radius: 10px 10px 0 0; margin: -15px -15px 0 -15px; }
+        .depot-header { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 5px; margin: 0 -15px 15px -15px; font-weight: bold; border-bottom: 1px solid #dadce0; }
+        .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 10px; padding-bottom: 10px; font-weight: bold; }
+
+        .staff-card { border: 1px solid #dadce0; padding: 12px; border-radius: 10px; margin-bottom: 10px; background: #fff; transition: 0.2s; }
+
+        /* App Colors */
+        .card-absent { border: 2.5px solid var(--danger) !important; background-color: #fff5f5 !important; }
+        .card-absent .staff-name { color: var(--danger) !important; }
+        .card-halfday { border: 2.5px solid var(--warning) !important; background-color: #fffdf0 !important; }
+        .card-halfday .staff-name { color: #856404 !important; }
+
+        .staff-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; color: #202124; }
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .status-select, .time-input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; width: 100%; box-sizing: border-box; }
+        
+        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="loginScreen">
+        <h2 style="color: #1a73e8;">NORTHERN GOODS CARRIER</h2>
+        <input type="password" id="pinEntry" class="pin-input" placeholder="Enter PIN" maxlength="4" inputmode="numeric">
+        <button class="login-btn" onclick="checkPin()">Unlock App</button>
+    </div>
+
+    <div id="mainApp">
+        <div class="firm-header"><h1>NORTHERN GOODS CARRIER</h1></div>
+        <div class="depot-header">VARANASI DEPOT</div>
+        <div class="header"><div id="dateStr"></div></div>
+        <div id="staffContainer"></div>
+        <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report on WhatsApp</button>
+    </div>
+</div>
+
+<script>
+    const APP_PIN = "1234"; 
+    const employees = ["Anand Tripathi", "Sachin Yadav", "Shivam Gupta", "Saurabh Gupta", "Ram Bharos Yadav", "Prince Tiwari", "Aakash", "Vishal"]; 
+    let attendance = {};
+
+    function checkPin() {
+        if (document.getElementById('pinEntry').value === APP_PIN) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            initApp();
+        } else {
+            alert("Wrong PIN!");
+            document.getElementById('pinEntry').value = '';
+        }
+    }
+
+    function initApp() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('dateStr').innerText = now.toLocaleDateString('en-US', options);
+        const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+        employees.forEach(name => {
+            if (!attendance[name]) attendance[name] = { status: "Present", time: currentTime };
+        });
+        renderList();
+    }
+
+    function renderList() {
+        const container = document.getElementById('staffContainer');
+        container.innerHTML = '';
+        employees.forEach(name => {
+            const status = attendance[name].status;
+            let statusClass = "card-present";
+            if(status === "Absent") statusClass = "card-absent";
+            if(status === "Half-Day") statusClass = "card-halfday";
+
+            const card = document.createElement('div');
+            card.className = `staff-card ${statusClass}`;
+            card.innerHTML = `
+                <span class="staff-name">${name}</span>
+                <div class="controls-grid">
+                    <select class="status-select" onchange="updateStatus('${name}', this.value)">
+                        <option value="Present" ${status === 'Present' ? 'selected' : ''}>Present</option>
+                        <option value="Half-Day" ${status === 'Half-Day' ? 'selected' : ''}>Half-Day</option>
+                        <option value="Absent" ${status === 'Absent' ? 'selected' : ''}>Absent</option>
+                        <option value="OFF" ${status === 'OFF' ? 'selected' : ''}>OFF</option>
+                    </select>
+                    <input type="time" class="time-input" value="${attendance[name].time}" onchange="updateTime('${name}', this.value)">
+                </div>`;
+            container.appendChild(card);
+        });
+    }
+
+    function updateTime(n, v) { attendance[n].time = v; }
+    function updateStatus(n, v) { 
+        attendance[n].status = v; 
+        renderList(); 
+    }
+
+    function sendToWhatsApp() {
         let dayStr = document.getElementById('dateStr').innerText;
         let message = `*NORTHERN GOODS CARRIER*%0A*Depot:* VARANASI DEPOT%0A*Date:* ${dayStr}%0A----------------------------%0A%0A`;
         
@@ -7,20 +121,19 @@ function sendToWhatsApp() {
             let statusText = d.status.toUpperCase();
             let tInfo = (d.status === "Present" || d.status === "Half-Day") ? ` (${d.time})` : "";
             
-            // WHATSAPP PAR COLOR KI JAGAH EMOJI JADOO
+            // WHATSAPP EMOJI LOGIC
             let colorIcon = "";
-            if(d.status === "Absent") {
-                colorIcon = "🔴 "; // Red Circle for Absent
-            } else if(d.status === "Half-Day") {
-                colorIcon = "🟡 "; // Yellow Circle for Half-Day
-            } else {
-                colorIcon = "";    // Normal for Present
-            }
+            if(d.status === "Absent") colorIcon = "🔴 ";
+            else if(d.status === "Half-Day") colorIcon = "🟡 ";
             
             message += `${colorIcon}*${name.toUpperCase()}*: ${statusText}${tInfo}%0A`;
         });
         
         message += `%0A----------------------------%0A`;
-        message += `Generated via NGC Varanasi App`;
         window.open(`https://wa.me/?text=${message}`, '_blank');
     }
+
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+</script>
+</body>
+</html>
