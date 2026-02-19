@@ -19,24 +19,28 @@
         .firm-header { text-align: center; background: var(--primary); color: white; padding: 15px; border-radius: 10px 10px 0 0; margin: -15px -15px 0 -15px; }
         .firm-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; font-weight: 800; }
         
-        /* DEPOT LABEL - TOP & BOTTOM */
-        .depot-label { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 8px; font-weight: 800; font-size: 14px; border-bottom: 2px solid #1a73e8; letter-spacing: 0.5px; margin: 0 -15px 15px -15px; }
-        .depot-footer { text-align: center; padding: 10px; color: #1a73e8; font-weight: 800; font-size: 14px; background: #f8f9fa; margin: 15px -15px -15px -15px; border-top: 1px solid #ddd; }
+        .depot-label { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 8px; font-weight: 800; font-size: 14px; border-bottom: 2px solid #1a73e8; margin: 0 -15px 15px -15px; }
+
+        /* Add Staff Section */
+        .add-staff-box { display: flex; gap: 5px; margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc; }
+        .add-input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+        .add-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
         .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 15px; padding-bottom: 10px; font-weight: bold; }
-        #dateStr { font-size: 15px; color: #202124; }
-
-        .staff-card { border: 1px solid #dadce0; padding: 12px; border-radius: 10px; margin-bottom: 10px; background: #fff; transition: 0.2s; }
+        
+        .staff-card { border: 1px solid #dadce0; padding: 12px; border-radius: 10px; margin-bottom: 10px; background: #fff; position: relative; }
         .card-absent { border: 2.5px solid var(--danger) !important; background-color: #fff5f5 !important; }
-        .card-absent .staff-name { color: var(--danger) !important; }
         .card-halfday { border: 2.5px solid var(--warning) !important; background-color: #fffdf0 !important; }
-        .card-halfday .staff-name { color: #856404 !important; }
 
-        .staff-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; color: #202124; }
+        .staff-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; color: #202124; padding-right: 30px; }
+        .delete-staff { position: absolute; right: 10px; top: 10px; color: #ccc; cursor: pointer; font-weight: bold; font-size: 18px; }
+        .delete-staff:hover { color: var(--danger); }
+
         .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .status-select, .time-input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; width: 100%; box-sizing: border-box; }
         
         .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .depot-footer { text-align: center; padding: 10px; color: #1a73e8; font-weight: 800; font-size: 12px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -44,9 +48,7 @@
 <div class="container">
     <div id="loginScreen">
         <h2 style="color: #1a73e8;">NORTHERN GOODS CARRIER</h2>
-        <p>Varanasi Depot Access</p>
         <input type="password" id="pinEntry" class="pin-input" placeholder="****" maxlength="4" inputmode="numeric">
-        <br>
         <button class="login-btn" onclick="checkPin()">Unlock App</button>
     </div>
 
@@ -54,19 +56,23 @@
         <div class="firm-header"><h1>NORTHERN GOODS CARRIER</h1></div>
         <div class="depot-label">VARANASI DEPOT ATTENDANCE</div>
         
+        <div class="add-staff-box">
+            <input type="text" id="newStaffName" class="add-input" placeholder="Enter Staff Name...">
+            <button class="add-btn" onclick="addNewStaff()">Add</button>
+        </div>
+
         <div class="header"><div id="dateStr"></div></div>
-        
         <div id="staffContainer"></div>
         
         <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report on WhatsApp</button>
-        
         <div class="depot-footer">VARANASI DEPOT ATTENDANCE</div>
     </div>
 </div>
 
 <script>
     const APP_PIN = "1234"; 
-    const employees = ["Anand Tripathi", "Sachin Yadav", "Shivam Gupta", "Saurabh Gupta", "Ram Bharos Yadav", "Prince Tiwari", "Aakash", "Vishal"]; 
+    // Phone ki memory se naam uthayega, agar pehli baar hai toh purane naam dikhayega
+    let employees = JSON.parse(localStorage.getItem('ngc_staff')) || ["Anand Tripathi", "Sachin Yadav", "Shivam Gupta", "Saurabh Gupta", "Ram Bharos Yadav", "Prince Tiwari", "Aakash", "Vishal"]; 
     let attendance = {};
 
     function checkPin() {
@@ -80,11 +86,30 @@
         }
     }
 
+    function addNewStaff() {
+        let name = document.getElementById('newStaffName').value.trim();
+        if (name && !employees.includes(name)) {
+            employees.push(name);
+            localStorage.setItem('ngc_staff', JSON.stringify(employees));
+            document.getElementById('newStaffName').value = '';
+            initApp();
+        }
+    }
+
+    function removeStaff(name) {
+        if(confirm(`Remove ${name} from list?`)) {
+            employees = employees.filter(e => e !== name);
+            localStorage.setItem('ngc_staff', JSON.stringify(employees));
+            initApp();
+        }
+    }
+
     function initApp() {
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('dateStr').innerText = now.toLocaleDateString('en-US', options);
         const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+        
         employees.forEach(name => {
             if (!attendance[name]) attendance[name] = { status: "Present", time: currentTime };
         });
@@ -96,13 +121,12 @@
         container.innerHTML = '';
         employees.forEach(name => {
             const status = attendance[name].status;
-            let statusClass = "card-present";
-            if(status === "Absent") statusClass = "card-absent";
-            if(status === "Half-Day") statusClass = "card-halfday";
+            let statusClass = (status === "Absent") ? "card-absent" : (status === "Half-Day") ? "card-halfday" : "card-present";
 
             const card = document.createElement('div');
             card.className = `staff-card ${statusClass}`;
             card.innerHTML = `
+                <span class="delete-staff" onclick="removeStaff('${name}')">×</span>
                 <span class="staff-name">${name}</span>
                 <div class="controls-grid">
                     <select class="status-select" onchange="updateStatus('${name}', this.value)">
@@ -118,26 +142,18 @@
     }
 
     function updateTime(n, v) { attendance[n].time = v; }
-    function updateStatus(n, v) { 
-        attendance[n].status = v; 
-        renderList(); 
-    }
+    function updateStatus(n, v) { attendance[n].status = v; renderList(); }
 
     function sendToWhatsApp() {
         let dayStr = document.getElementById('dateStr').innerText;
         let message = `*NORTHERN GOODS CARRIER*%0A*Depot:* VARANASI DEPOT ATTENDANCE%0A*Date:* ${dayStr}%0A----------------------------%0A%0A`;
-        
         employees.forEach(name => {
             let d = attendance[name];
-            let statusText = d.status.toUpperCase();
             let tInfo = (d.status === "Present" || d.status === "Half-Day") ? ` (${d.time})` : "";
-            let colorIcon = (d.status === "Absent") ? "🔴 " : (d.status === "Half-Day") ? "🟡 " : "";
-            
-            message += `${colorIcon}*${name.toUpperCase()}*: ${statusText}${tInfo}%0A`;
+            let icon = (d.status === "Absent") ? "🔴 " : (d.status === "Half-Day") ? "🟡 " : "";
+            message += `${icon}*${name.toUpperCase()}*: ${d.status.toUpperCase()}${tInfo}%0A`;
         });
-        
         message += `%0A----------------------------%0A`;
-        message += `Generated via NGC Varanasi App`;
         window.open(`https://wa.me/?text=${message}`, '_blank');
     }
 
