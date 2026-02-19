@@ -6,46 +6,50 @@
     <title>NORTHERN GOODS CARRIER</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --warning: #f9ab00; }
+        :root { --primary: #1a73e8; --success: #202124; --danger: #d93025; --warning: #f9ab00; }
         body { font-family: 'Segoe UI', sans-serif; background: #f1f3f4; margin: 0; padding: 10px; color: #3c4043; }
         .container { max-width: 450px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
         
-        /* Login Screen */
         #loginScreen { text-align: center; padding: 40px 20px; }
         .pin-input { width: 80%; padding: 15px; font-size: 24px; text-align: center; border: 2px solid #dadce0; border-radius: 8px; margin-bottom: 20px; letter-spacing: 10px; outline: none; }
         .login-btn { width: 80%; background: #1a73e8; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
 
-        /* Main App */
         #mainApp { display: none; }
 
         .firm-header { text-align: center; background: #1a73e8; color: white; padding: 15px; border-radius: 10px 10px 0 0; margin: -15px -15px 0 -15px; }
         .firm-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; font-weight: 800; }
-        
         .depot-header { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 5px; margin: 0 -15px 15px -15px; font-weight: bold; font-size: 14px; border-bottom: 1px solid #dadce0; }
 
         .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 10px; padding-bottom: 10px; }
         #dateStr { font-size: 15px; font-weight: bold; color: #202124; }
         
-        .staff-card { border-bottom: 1px solid #f1f3f4; padding: 12px 0; }
-        .staff-name { font-weight: 600; font-size: 16px; display: block; margin-bottom: 8px; color: #202124; }
+        /* CARD STYLES */
+        .staff-card { 
+            border: 1px solid #dadce0; 
+            padding: 12px; 
+            border-radius: 10px; 
+            margin-bottom: 10px; 
+            transition: 0.2s;
+        }
         
+        /* Specific Colors */
+        .card-absent { border: 2px solid var(--danger) !important; color: var(--danger) !important; background-color: #fff5f5; }
+        .card-halfday { border: 2px solid var(--warning) !important; color: #856404 !important; background-color: #fffdf0; }
+        .card-present { border: 1px solid #dadce0; color: #202124; background-color: #ffffff; }
+
+        .staff-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; }
         .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .status-select, .time-input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; outline: none; width: 100%; box-sizing: border-box; }
-        .time-input { color: #1a73e8; background: #e8f0fe; border-color: #1a73e8; }
+        .status-select, .time-input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; outline: none; width: 100%; box-sizing: border-box; color: inherit; }
         
-        .label-text { font-size: 11px; color: #70757a; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        
-        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 20px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="loginScreen">
-        <div style="margin-bottom: 20px;">
-            <h2 style="color: #1a73e8;">NORTHERN GOODS CARRIER</h2>
-            <p style="color: #70757a;">Enter PIN to Access</p>
-        </div>
+        <h2 style="color: #1a73e8;">NORTHERN GOODS CARRIER</h2>
+        <p>Enter PIN to Access</p>
         <input type="password" id="pinEntry" class="pin-input" placeholder="****" maxlength="4" inputmode="numeric">
         <br>
         <button class="login-btn" onclick="checkPin()">Unlock App</button>
@@ -54,11 +58,8 @@
     <div id="mainApp">
         <div class="firm-header"><h1>NORTHERN GOODS CARRIER</h1></div>
         <div class="depot-header">VARANASI DEPOT</div>
-        
         <div class="header"><div id="dateStr"></div></div>
-        
         <div id="staffContainer"></div>
-        
         <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report on WhatsApp</button>
     </div>
 </div>
@@ -69,8 +70,7 @@
     let attendance = {};
 
     function checkPin() {
-        const enteredPin = document.getElementById('pinEntry').value;
-        if (enteredPin === APP_PIN) {
+        if (document.getElementById('pinEntry').value === APP_PIN) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             initApp();
@@ -95,51 +95,47 @@
         const container = document.getElementById('staffContainer');
         container.innerHTML = '';
         employees.forEach(name => {
+            const status = attendance[name].status;
+            let statusClass = "card-present";
+            if(status === "Absent") statusClass = "card-absent";
+            if(status === "Half-Day") statusClass = "card-halfday";
+
             const card = document.createElement('div');
-            card.className = 'staff-card';
+            card.className = `staff-card ${statusClass}`;
             card.innerHTML = `
                 <span class="staff-name">${name}</span>
                 <div class="controls-grid">
-                    <div>
-                        <span class="label-text">Status</span>
-                        <select class="status-select" onchange="updateStatus('${name}', this.value)">
-                            <option value="Present">Present</option>
-                            <option value="Half-Day">Half-Day</option>
-                            <option value="Absent">Absent</option>
-                            <option value="OFF">OFF</option>
-                        </select>
-                    </div>
-                    <div>
-                        <span class="label-text">In-Time</span>
-                        <input type="time" class="time-input" value="${attendance[name].time}" onchange="updateTime('${name}', this.value)">
-                    </div>
+                    <select class="status-select" onchange="updateStatus('${name}', this.value)">
+                        <option value="Present" ${status === 'Present' ? 'selected' : ''}>Present</option>
+                        <option value="Half-Day" ${status === 'Half-Day' ? 'selected' : ''}>Half-Day</option>
+                        <option value="Absent" ${status === 'Absent' ? 'selected' : ''}>Absent</option>
+                        <option value="OFF" ${status === 'OFF' ? 'selected' : ''}>OFF</option>
+                    </select>
+                    <input type="time" class="time-input" value="${attendance[name].time}" onchange="updateTime('${name}', this.value)">
                 </div>`;
             container.appendChild(card);
         });
     }
 
     function updateTime(n, v) { attendance[n].time = v; }
-    function updateStatus(n, v) { attendance[n].status = v; }
+    function updateStatus(n, v) { 
+        attendance[n].status = v; 
+        renderList(); 
+    }
 
     function sendToWhatsApp() {
         let dayStr = document.getElementById('dateStr').innerText;
-        // Clean Message without Emojis to avoid Question Marks
         let message = `*NORTHERN GOODS CARRIER*%0A*Depot:* VARANASI DEPOT%0A*Date:* ${dayStr}%0A----------------------------%0A%0A`;
-        
         employees.forEach(name => {
             let d = attendance[name];
             let t = (d.status === "Present" || d.status === "Half-Day") ? ` (${d.time})` : "";
             message += `*${name.toUpperCase()}*: ${d.status.toUpperCase()}${t}%0A`;
         });
-        
         message += `%0A----------------------------%0A`;
-        message += `Generated via NGC Varanasi App`;
         window.open(`https://wa.me/?text=${message}`, '_blank');
     }
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 </script>
 </body>
 </html>
