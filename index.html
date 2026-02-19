@@ -8,20 +8,20 @@
     <style>
         :root { --danger: #d93025; --warning: #f9ab00; --primary: #1a73e8; }
         body { font-family: 'Segoe UI', sans-serif; background: #f1f3f4; margin: 0; padding: 10px; }
-        .container { max-width: 450px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .container { max-width: 450px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 90vh; }
         
         #loginScreen { text-align: center; padding: 40px 20px; }
         .pin-input { width: 80%; padding: 15px; font-size: 24px; text-align: center; border: 2px solid #dadce0; border-radius: 8px; margin-bottom: 20px; outline: none; }
         .login-btn { width: 80%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        #mainApp { display: none; }
+        #mainApp { display: none; flex-grow: 1; }
 
         .firm-header { text-align: center; background: var(--primary); color: white; padding: 15px; border-radius: 10px 10px 0 0; margin: -15px -15px 0 -15px; }
         .firm-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; font-weight: 800; }
         
+        /* TOP DEPOT LABEL */
         .depot-label { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 8px; font-weight: 800; font-size: 14px; border-bottom: 2px solid #1a73e8; margin: 0 -15px 15px -15px; }
 
-        /* Add Staff Section */
         .add-staff-box { display: flex; gap: 5px; margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc; }
         .add-input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
         .add-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
@@ -30,17 +30,19 @@
         
         .staff-card { border: 1px solid #dadce0; padding: 12px; border-radius: 10px; margin-bottom: 10px; background: #fff; position: relative; }
         .card-absent { border: 2.5px solid var(--danger) !important; background-color: #fff5f5 !important; }
+        .card-absent .staff-name { color: var(--danger) !important; }
         .card-halfday { border: 2.5px solid var(--warning) !important; background-color: #fffdf0 !important; }
 
-        .staff-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; color: #202124; padding-right: 30px; }
-        .delete-staff { position: absolute; right: 10px; top: 10px; color: #ccc; cursor: pointer; font-weight: bold; font-size: 18px; }
-        .delete-staff:hover { color: var(--danger); }
+        .staff-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; color: #202124; }
+        .delete-staff { position: absolute; right: 10px; top: 10px; color: #ccc; cursor: pointer; font-size: 20px; }
 
         .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .status-select, .time-input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; width: 100%; box-sizing: border-box; }
         
         .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 10px; cursor: pointer; }
-        .depot-footer { text-align: center; padding: 10px; color: #1a73e8; font-weight: 800; font-size: 12px; margin-top: 10px; }
+
+        /* BOTTOM DEPOT LABEL - FIXED */
+        .depot-footer-fixed { text-align: center; padding: 15px; color: #1a73e8; font-weight: 800; font-size: 14px; background: #f1f3f4; margin: 20px -15px -15px -15px; border-top: 2px solid #ddd; border-radius: 0 0 12px 12px; }
     </style>
 </head>
 <body>
@@ -57,7 +59,7 @@
         <div class="depot-label">VARANASI DEPOT ATTENDANCE</div>
         
         <div class="add-staff-box">
-            <input type="text" id="newStaffName" class="add-input" placeholder="Enter Staff Name...">
+            <input type="text" id="newStaffName" class="add-input" placeholder="Naya naam likhein...">
             <button class="add-btn" onclick="addNewStaff()">Add</button>
         </div>
 
@@ -65,13 +67,13 @@
         <div id="staffContainer"></div>
         
         <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report on WhatsApp</button>
-        <div class="depot-footer">VARANASI DEPOT ATTENDANCE</div>
+        
+        <div class="depot-footer-fixed">VARANASI DEPOT ATTENDANCE</div>
     </div>
 </div>
 
 <script>
     const APP_PIN = "1234"; 
-    // Phone ki memory se naam uthayega, agar pehli baar hai toh purane naam dikhayega
     let employees = JSON.parse(localStorage.getItem('ngc_staff')) || ["Anand Tripathi", "Sachin Yadav", "Shivam Gupta", "Saurabh Gupta", "Ram Bharos Yadav", "Prince Tiwari", "Aakash", "Vishal"]; 
     let attendance = {};
 
@@ -97,7 +99,7 @@
     }
 
     function removeStaff(name) {
-        if(confirm(`Remove ${name} from list?`)) {
+        if(confirm(`Remove ${name}?`)) {
             employees = employees.filter(e => e !== name);
             localStorage.setItem('ngc_staff', JSON.stringify(employees));
             initApp();
