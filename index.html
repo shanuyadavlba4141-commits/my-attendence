@@ -3,32 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NORTHERN GOODS CARRIER - Attendance</title>
+    <title>NORTHERN GOODS CARRIER</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --warning: #f9ab00; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f3f4; margin: 0; padding: 15px; color: #3c4043; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f3f4; margin: 0; padding: 15px; color: #3c4043; }
         .container { max-width: 450px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
         .firm-header { text-align: center; background: #1a73e8; color: white; padding: 18px; border-radius: 10px 10px 0 0; margin: -20px -20px 20px -20px; }
-        .firm-header h1 { margin: 0; font-size: 19px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
-        
+        .firm-header h1 { margin: 0; font-size: 19px; text-transform: uppercase; font-weight: 800; }
         .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 15px; padding-bottom: 10px; margin-top: 5px; }
         #dateStr { font-size: 16px; font-weight: bold; color: #202124; }
-
         .staff-card { border-bottom: 1px solid #f1f3f4; padding: 15px 0; display: flex; flex-direction: column; gap: 10px; }
-        .staff-top { display: flex; justify-content: space-between; align-items: center; }
         .staff-name { font-weight: 600; font-size: 16px; color: #202124; }
-        
         .controls-row { display: flex; gap: 10px; align-items: center; }
-        
-        .status-select { flex: 1; padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; background: white; cursor: pointer; outline: none; }
-        .status-select.Present { color: var(--success); border-color: var(--success); }
-        .status-select.Absent { color: var(--danger); border-color: var(--danger); }
-        .status-select.Half-Day { color: var(--warning); border-color: var(--warning); }
-        .status-select.OFF { color: #673ab7; border-color: #673ab7; }
-
-        .time-input { padding: 9px; border: 1px solid #1a73e8; border-radius: 6px; font-size: 13px; color: #1a73e8; font-weight: bold; background: #e8f0fe; width: 90px; outline: none; }
-        
+        .status-select { flex: 1; padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; background: white; outline: none; }
+        .time-input { padding: 9px; border: 1px solid #1a73e8; border-radius: 6px; font-size: 13px; color: #1a73e8; font-weight: bold; background: #e8f0fe; width: 90px; }
         .footer-depot { text-align: center; margin-top: 20px; padding: 10px; color: #5f6368; font-weight: bold; font-size: 14px; border-top: 1px solid #eee; background: #fafafa; }
         .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
     </style>
@@ -36,67 +25,40 @@
 <body>
 
 <div class="container">
-    <div class="firm-header">
-        <h1>NORTHERN GOODS CARRIER</h1>
-    </div>
-
-    <div class="header">
-        <div id="dateStr"></div>
-    </div>
-
+    <div class="firm-header"><h1>NORTHERN GOODS CARRIER</h1></div>
+    <div class="header"><div id="dateStr"></div></div>
     <div id="staffContainer"></div>
-
     <div class="footer-depot">VARANASI DEPOT</div>
-
     <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report on WhatsApp</button>
 </div>
 
 <script>
-    let employees = [
-        "Anand Tripathi",
-        "Sachin Yadav",
-        "Shivam Gupta",
-        "Saurabh Gupta",
-        "Ram Bharos Yadav",
-        "Prince Tiwari",
-        "Aakash",
-        "Vishal"
-    ]; 
-    
+    let employees = ["Anand Tripathi", "Sachin Yadav", "Shivam Gupta", "Saurabh Gupta", "Ram Bharos Yadav", "Prince Tiwari", "Aakash", "Vishal"]; 
     let attendance = {};
 
     function init() {
         const now = new Date();
-        // Changed to English Locale
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('dateStr').innerText = now.toLocaleDateString('en-US', options);
-        
         const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-
-        employees.forEach(name => {
-            attendance[name] = { status: "Present", time: currentTime };
-        });
-        
+        employees.forEach(name => { attendance[name] = { status: "Present", time: currentTime }; });
         renderList();
     }
 
     function renderList() {
         const container = document.getElementById('staffContainer');
         container.innerHTML = '';
-        
         employees.forEach(name => {
             const card = document.createElement('div');
             card.className = 'staff-card';
             card.innerHTML = `
-                <div class="staff-top">
-                    <span class="staff-name">${name}</span>
-                </div>
+                <span class="staff-name">${name}</span>
                 <div class="controls-row">
-                    <select class="status-select ${attendance[name].status}" onchange="mark('${name}', this.value)">
-                        <option value="Present" ${attendance[name].status === 'Present' ? 'selected' : ''}>Present</option>
-                        <option value="Half-Day" ${attendance[name].status === 'Half-Day' ? 'selected' : ''}>Half-Day</option>
-                        <option value="Absent" ${attendance[name].status === 'Absent' ? 'selected' : ''}>Absent</option>
-                        <option value="OFF" ${attendance[name].status === 'OFF' ? 'selected' : ''}>OFF</option>
+                    <select class="status-select" onchange="mark('${name}', this.value)">
+                        <option value="Present">Present</option>
+                        <option value="Half-Day">Half-Day</option>
+                        <option value="Absent">Absent</option>
+                        <option value="OFF">OFF</option>
                     </select>
                     <input type="time" class="time-input" value="${attendance[name].time}" onchange="updateTime('${name}', this.value)">
                 </div>`;
@@ -105,34 +67,27 @@
     }
 
     function updateTime(name, newTime) { attendance[name].time = newTime; }
-
-    function mark(name, status) { 
-        attendance[name].status = status; 
-        renderList(); 
-    }
+    function mark(name, status) { attendance[name].status = status; }
 
     function sendToWhatsApp() {
-        let fName = "NORTHERN GOODS CARRIER";
         let dayStr = document.getElementById('dateStr').innerText;
-        
-        let message = `*${fName}*%0A`;
-        message += `*Depot:* VARANASI DEPOT%0A`;
-        message += `*Day/Date:* ${dayStr}%0A`;
-        message += `----------------------------%0A%0A`;
-        
+        let message = `*NORTHERN GOODS CARRIER*%0A*Depot:* VARANASI DEPOT%0A*Date:* ${dayStr}%0A----------------------------%0A%0A`;
         employees.forEach(name => {
-            let data = attendance[name];
-            let tShow = (data.status === "Present" || data.status === "Half-Day") ? ` (Time: ${data.time})` : "";
-            message += `👤 *${name.toUpperCase()}*: ${data.status.toUpperCase()}${tShow}%0A`;
+            let d = attendance[name];
+            let t = (d.status === "Present" || d.status === "Half-Day") ? ` (${d.time})` : "";
+            message += `👤 *${name.toUpperCase()}*: ${d.status.toUpperCase()}${t}%0A`;
         });
-        
-        message += `%0A----------------------------%0A`;
-        message += `VARANASI DEPOT`;
-        
         window.open(`https://wa.me/?text=${message}`, '_blank');
     }
+
     init();
+
+    // SERVICE WORKER REGISTRATION
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(() => {
+        console.log("App Ready to Install!");
+      });
+    }
 </script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
+</body>
+</html>
