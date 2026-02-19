@@ -1,15 +1,8 @@
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open('attendance-v1').then((cache) => cache.addAll([
-      '/',
-      '/index.html',
-      '/manifest.json'
-    ])),
-  );
+self.addEventListener('install', (event) => {
+  console.log('Service Worker Installed');
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => response || fetch(e.request)),
-  );
+self.addEventListener('fetch', (event) => {
+  // Isse app online/offline dono mein chalega
+  event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
 });
