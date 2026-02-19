@@ -3,57 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firm Attendance Admin</title>
+    <title>NORTHERN GOODS CARRIER - Attendance</title>
     <style>
         :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --warning: #f9ab00; }
         body { font-family: sans-serif; background: #f1f3f4; margin: 0; padding: 15px; color: #3c4043; }
         .container { max-width: 450px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        .firm-header { text-align: center; background: #1a73e8; color: white; padding: 15px; border-radius: 8px 8px 0 0; margin: -20px -20px 20px -20px; }
-        .firm-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; }
+        /* Company Branding Header */
+        .firm-header { text-align: center; background: #1a73e8; color: white; padding: 18px; border-radius: 10px 10px 0 0; margin: -20px -20px 20px -20px; }
+        .firm-header h1 { margin: 0; font-size: 19px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
         
-        .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 20px; padding-bottom: 10px; margin-top: 10px; }
-        #dateStr { font-size: 16px; font-weight: bold; color: #202124; }
+        .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 20px; padding-bottom: 10px; margin-top: 5px; }
+        #dateStr { font-size: 16px; font-weight: bold; color: #202124; text-transform: capitalize; }
 
         .staff-card { border-bottom: 1px solid #f1f3f4; padding: 15px 0; }
         .staff-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .staff-name { font-weight: 600; font-size: 16px; }
+        .staff-name { font-weight: 600; font-size: 16px; color: #202124; }
         
-        /* Manual Time Input Style */
-        .time-input { padding: 5px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 14px; color: #1a73e8; font-weight: bold; background: #e8f0fe; width: 100px; }
+        .time-input { padding: 6px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 14px; color: #1a73e8; font-weight: bold; background: #e8f0fe; width: 100px; outline: none; border-style: solid; }
         
         .btn-group { display: flex; gap: 5px; }
-        .status-btn { flex: 1; padding: 12px; border: 1px solid #dadce0; border-radius: 6px; cursor: pointer; background: white; font-size: 11px; font-weight: bold; }
+        .status-btn { flex: 1; padding: 12px; border: 1px solid #dadce0; border-radius: 6px; cursor: pointer; background: white; font-size: 11px; font-weight: bold; text-transform: uppercase; }
 
-        .p-active { background: var(--success) !important; color: white !important; }
-        .h-active { background: var(--warning) !important; color: white !important; }
-        .a-active { background: var(--danger) !important; color: white !important; }
+        .p-active { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+        .h-active { background: var(--warning) !important; color: white !important; border-color: var(--warning) !important; }
+        .a-active { background: var(--danger) !important; color: white !important; border-color: var(--danger) !important; }
 
-        .footer-depot { text-align: center; margin-top: 20px; padding: 10px; color: #5f6368; font-weight: bold; font-size: 14px; border-top: 1px solid #eee; }
-        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .footer-depot { text-align: center; margin-top: 20px; padding: 10px; color: #5f6368; font-weight: bold; font-size: 14px; border-top: 1px solid #eee; background: #fafafa; letter-spacing: 1px; }
+        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         
-        .add-staff-box { display: flex; gap: 5px; margin-bottom: 20px; margin-top: 10px; }
-        .add-staff-box input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        .add-btn { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
+        .add-staff-box { display: flex; gap: 5px; margin-bottom: 20px; border: 1px dashed #ccc; padding: 10px; border-radius: 5px; }
+        .add-staff-box input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .add-btn { background: #5f6368; color: white; border: none; padding: 0 10px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="firm-header">
-        <h1 id="firmNameDisplay">APNI FIRM KA NAAM</h1>
+        <h1>NORTHERN GOODS CARRIER</h1>
     </div>
 
     <div class="header">
         <div id="dateStr"></div>
     </div>
 
-    <div class="add-staff-box">
-        <input type="text" id="newStaffName" placeholder="Naya Staff Naam...">
-        <button class="add-btn" onclick="addNewStaff()">ADD</button>
-    </div>
-
     <div id="staffContainer"></div>
+
+    <div class="add-staff-box">
+        <input type="text" id="newStaffName" placeholder="Naya naam jodein...">
+        <button class="add-btn" onclick="addNewStaff()">+ ADD</button>
+    </div>
 
     <div class="footer-depot">VARANASI DEPOT</div>
 
@@ -61,11 +61,22 @@
 </div>
 
 <script>
-    let employees = ["Shanu Yadav"]; 
+    // FIX STAFF LIST
+    let employees = [
+        "Shanu Yadav",
+        "Anand Tripathi",
+        "Sachin Yadav",
+        "Shivam Gupta",
+        "Saurabh Gupta",
+        "Ram Bharos Yadav",
+        "Prince Tiwari",
+        "Aakash",
+        "Vishal"
+    ]; 
+    
     let attendance = {};
 
     function init() {
-        // Auto Day and Date display
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('dateStr').innerText = now.toLocaleDateString('hi-IN', options);
@@ -89,4 +100,48 @@
             card.innerHTML = `
                 <div class="staff-info">
                     <span class="staff-name">${name}</span>
-                    <input type="time" class="time-input" id="time-${name}" value="${attendance[name
+                    <input type="time" class="time-input" id="time-${name}" value="${attendance[name].time}" onchange="updateTime('${name}', this.value)">
+                </div>
+                <div class="btn-group">
+                    <button class="status-btn ${attendance[name].status === 'Present' ? 'p-active' : ''}" onclick="mark('${name}', 'Present')">Present</button>
+                    <button class="status-btn ${attendance[name].status === 'Half-Day' ? 'h-active' : ''}" onclick="mark('${name}', 'Half-Day')">Half-Day</button>
+                    <button class="status-btn ${attendance[name].status === 'Absent' ? 'a-active' : ''}" onclick="mark('${name}', 'Absent')">Absent</button>
+                </div>`;
+            container.appendChild(card);
+        });
+    }
+
+    function updateTime(name, newTime) { attendance[name].time = newTime; }
+
+    function addNewStaff() {
+        const input = document.getElementById('newStaffName');
+        const name = input.value.trim();
+        if (name && !employees.includes(name)) { employees.push(name); renderList(); input.value = ''; }
+    }
+
+    function mark(name, status) { attendance[name].status = status; renderList(); }
+
+    function sendToWhatsApp() {
+        let fName = "NORTHERN GOODS CARRIER";
+        let dayStr = document.getElementById('dateStr').innerText;
+        
+        let message = `*${fName}*%0A`;
+        message += `*Depot:* VARANASI DEPOT%0A`;
+        message += `*Day/Date:* ${dayStr}%0A`;
+        message += `----------------------------%0A%0A`;
+        
+        employees.forEach(name => {
+            let data = attendance[name];
+            let tShow = (data.status !== "Absent") ? ` (Time: ${data.time})` : "";
+            message += `👤 *${name.toUpperCase()}*: ${data.status.toUpperCase()}${tShow}%0A`;
+        });
+        
+        message += `%0A----------------------------%0A`;
+        message += `Northern Goods Carrier Mobile App`;
+        
+        window.open(`https://wa.me/?text=${message}`, '_blank');
+    }
+    init();
+</script>
+</body>
+</html>
