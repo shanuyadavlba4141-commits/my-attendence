@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NORTHERN GOODS CARRIER - Secure</title>
+    <title>NORTHERN GOODS CARRIER</title>
     <link rel="manifest" href="manifest.json">
     <style>
         :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --warning: #f9ab00; }
@@ -15,21 +15,27 @@
         .pin-input { width: 80%; padding: 15px; font-size: 24px; text-align: center; border: 2px solid #dadce0; border-radius: 8px; margin-bottom: 20px; letter-spacing: 10px; outline: none; }
         .login-btn { width: 80%; background: #1a73e8; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
 
-        /* Main App (Initially Hidden) */
+        /* Main App */
         #mainApp { display: none; }
 
-        .firm-header { text-align: center; background: #1a73e8; color: white; padding: 15px; border-radius: 10px 10px 0 0; margin: -15px -15px 15px -15px; }
+        .firm-header { text-align: center; background: #1a73e8; color: white; padding: 15px; border-radius: 10px 10px 0 0; margin: -15px -15px 0 -15px; }
         .firm-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; font-weight: 800; }
+        
+        .depot-header { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 5px; margin: 0 -15px 15px -15px; font-weight: bold; font-size: 14px; border-bottom: 1px solid #dadce0; }
+
         .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 10px; padding-bottom: 10px; }
         #dateStr { font-size: 15px; font-weight: bold; color: #202124; }
+        
         .staff-card { border-bottom: 1px solid #f1f3f4; padding: 12px 0; }
-        .staff-name { font-weight: 600; font-size: 15px; display: block; margin-bottom: 8px; }
-        .controls-grid { display: grid; grid-template-columns: 1.2fr 0.8fr 0.7fr; gap: 8px; }
-        .status-select, .time-input, .ot-input { padding: 8px; border: 1px solid #dadce0; border-radius: 6px; font-size: 12px; font-weight: bold; outline: none; width: 100%; box-sizing: border-box; }
+        .staff-name { font-weight: 600; font-size: 16px; display: block; margin-bottom: 8px; color: #202124; }
+        
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .status-select, .time-input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; outline: none; width: 100%; box-sizing: border-box; }
         .time-input { color: #1a73e8; background: #e8f0fe; border-color: #1a73e8; }
-        .label-text { font-size: 10px; color: #70757a; text-transform: uppercase; margin-bottom: 2px; display: block; }
-        .footer-depot { text-align: center; margin-top: 20px; padding: 10px; font-weight: bold; font-size: 13px; border-top: 1px solid #eee; background: #fafafa; }
-        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        
+        .label-text { font-size: 11px; color: #70757a; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        
+        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 20px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -37,9 +43,8 @@
 <div class="container">
     <div id="loginScreen">
         <div style="margin-bottom: 20px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/6195/6195700.png" width="80" alt="Lock Icon">
             <h2 style="color: #1a73e8;">NORTHERN GOODS CARRIER</h2>
-            <p style="color: #70757a;">Enter App PIN to Continue</p>
+            <p style="color: #70757a;">Enter PIN to Access</p>
         </div>
         <input type="password" id="pinEntry" class="pin-input" placeholder="****" maxlength="4" inputmode="numeric">
         <br>
@@ -48,15 +53,18 @@
 
     <div id="mainApp">
         <div class="firm-header"><h1>NORTHERN GOODS CARRIER</h1></div>
+        <div class="depot-header">VARANASI DEPOT</div>
+        
         <div class="header"><div id="dateStr"></div></div>
+        
         <div id="staffContainer"></div>
-        <div class="footer-depot">VARANASI DEPOT</div>
-        <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report with OT</button>
+        
+        <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report on WhatsApp</button>
     </div>
 </div>
 
 <script>
-    const APP_PIN = "1234"; // YAHAN APNA PIN BADAL SAKTE HAIN
+    const APP_PIN = "1234"; 
     const employees = ["Anand Tripathi", "Sachin Yadav", "Shivam Gupta", "Saurabh Gupta", "Ram Bharos Yadav", "Prince Tiwari", "Aakash", "Vishal"]; 
     let attendance = {};
 
@@ -67,7 +75,7 @@
             document.getElementById('mainApp').style.display = 'block';
             initApp();
         } else {
-            alert("Wrong PIN! Please try again.");
+            alert("Wrong PIN!");
             document.getElementById('pinEntry').value = '';
         }
     }
@@ -78,7 +86,7 @@
         document.getElementById('dateStr').innerText = now.toLocaleDateString('en-US', options);
         const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
         employees.forEach(name => {
-            if (!attendance[name]) attendance[name] = { status: "Present", time: currentTime, ot: "0" };
+            if (!attendance[name]) attendance[name] = { status: "Present", time: currentTime };
         });
         renderList();
     }
@@ -92,29 +100,40 @@
             card.innerHTML = `
                 <span class="staff-name">${name}</span>
                 <div class="controls-grid">
-                    <div><span class="label-text">Status</span><select class="status-select" onchange="updateStatus('${name}', this.value)">
-                        <option value="Present">Present</option><option value="Half-Day">Half-Day</option><option value="Absent">Absent</option><option value="OFF">OFF</option>
-                    </select></div>
-                    <div><span class="label-text">In-Time</span><input type="time" class="time-input" value="${attendance[name].time}" onchange="updateTime('${name}', this.value)"></div>
-                    <div><span class="label-text">OT (Hrs)</span><input type="number" class="ot-input" value="${attendance[name].ot}" onchange="updateOT('${name}', this.value)"></div>
+                    <div>
+                        <span class="label-text">Status</span>
+                        <select class="status-select" onchange="updateStatus('${name}', this.value)">
+                            <option value="Present">Present</option>
+                            <option value="Half-Day">Half-Day</option>
+                            <option value="Absent">Absent</option>
+                            <option value="OFF">OFF</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span class="label-text">In-Time</span>
+                        <input type="time" class="time-input" value="${attendance[name].time}" onchange="updateTime('${name}', this.value)">
+                    </div>
                 </div>`;
             container.appendChild(card);
         });
     }
 
     function updateTime(n, v) { attendance[n].time = v; }
-    function updateOT(n, v) { attendance[n].ot = v; }
     function updateStatus(n, v) { attendance[n].status = v; }
 
     function sendToWhatsApp() {
         let dayStr = document.getElementById('dateStr').innerText;
+        // Clean Message without Emojis to avoid Question Marks
         let message = `*NORTHERN GOODS CARRIER*%0A*Depot:* VARANASI DEPOT%0A*Date:* ${dayStr}%0A----------------------------%0A%0A`;
+        
         employees.forEach(name => {
             let d = attendance[name];
             let t = (d.status === "Present" || d.status === "Half-Day") ? ` (${d.time})` : "";
-            let ot = (parseFloat(d.ot) > 0) ? ` | *OT: ${d.ot}Hrs*` : "";
-            message += `👤 *${name.toUpperCase()}*: ${d.status.toUpperCase()}${t}${ot}%0A`;
+            message += `*${name.toUpperCase()}*: ${d.status.toUpperCase()}${t}%0A`;
         });
+        
+        message += `%0A----------------------------%0A`;
+        message += `Generated via NGC Varanasi App`;
         window.open(`https://wa.me/?text=${message}`, '_blank');
     }
 
