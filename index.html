@@ -3,34 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NORTHERN GOODS CARRIER - Varanasi</title>
+    <title>NGC Varanasi Attendance</title>
     <link rel="manifest" href="manifest.json">
     <style>
         :root { --danger: #d93025; --warning: #f9ab00; --primary: #1a73e8; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f3f4; margin: 0; padding: 10px; }
-        .container { max-width: 450px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 90vh; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f3f4; margin: 0; padding: 10px; display: flex; flex-direction: column; min-height: 100vh; }
+        .container { max-width: 450px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); flex: 1; display: flex; flex-direction: column; position: relative; }
         
         #loginScreen { text-align: center; padding: 40px 20px; }
         .pin-input { width: 80%; padding: 15px; font-size: 24px; text-align: center; border: 2px solid #dadce0; border-radius: 8px; margin-bottom: 20px; outline: none; }
         .login-btn { width: 80%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        #mainApp { display: none; flex-grow: 1; }
+        #mainApp { display: none; flex: 1; flex-direction: column; }
 
         .firm-header { text-align: center; background: var(--primary); color: white; padding: 15px; border-radius: 10px 10px 0 0; margin: -15px -15px 0 -15px; }
         .firm-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; font-weight: 800; }
         
-        /* TOP DEPOT LABEL */
+        /* TOP LABEL */
         .depot-label { text-align: center; background: #e8f0fe; color: #1a73e8; padding: 8px; font-weight: 800; font-size: 14px; border-bottom: 2px solid #1a73e8; margin: 0 -15px 15px -15px; }
 
         .add-staff-box { display: flex; gap: 5px; margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc; }
         .add-input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
         .add-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 15px; padding-bottom: 10px; font-weight: bold; }
-        
+        #staffContainer { flex: 1; }
         .staff-card { border: 1px solid #dadce0; padding: 12px; border-radius: 10px; margin-bottom: 10px; background: #fff; position: relative; }
         .card-absent { border: 2.5px solid var(--danger) !important; background-color: #fff5f5 !important; }
-        .card-absent .staff-name { color: var(--danger) !important; }
         .card-halfday { border: 2.5px solid var(--warning) !important; background-color: #fffdf0 !important; }
 
         .staff-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 8px; color: #202124; }
@@ -39,10 +37,21 @@
         .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .status-select, .time-input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; width: 100%; box-sizing: border-box; }
         
-        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 15px; cursor: pointer; }
 
-        /* BOTTOM DEPOT LABEL - FIXED */
-        .depot-footer-fixed { text-align: center; padding: 15px; color: #1a73e8; font-weight: 800; font-size: 14px; background: #f1f3f4; margin: 20px -15px -15px -15px; border-top: 2px solid #ddd; border-radius: 0 0 12px 12px; }
+        /* BOTTOM LABEL - EKDAM PAKKA WALA */
+        .depot-footer-bottom { 
+            text-align: center; 
+            padding: 15px; 
+            color: #1a73e8; 
+            font-weight: 900; 
+            font-size: 15px; 
+            background: #e8f0fe; 
+            margin: 20px -15px -15px -15px; 
+            border-top: 2px solid #1a73e8;
+            border-radius: 0 0 12px 12px;
+            display: block !important;
+        }
     </style>
 </head>
 <body>
@@ -59,16 +68,17 @@
         <div class="depot-label">VARANASI DEPOT ATTENDANCE</div>
         
         <div class="add-staff-box">
-            <input type="text" id="newStaffName" class="add-input" placeholder="Naya naam likhein...">
+            <input type="text" id="newStaffName" class="add-input" placeholder="Naam Likhein...">
             <button class="add-btn" onclick="addNewStaff()">Add</button>
         </div>
 
-        <div class="header"><div id="dateStr"></div></div>
+        <div style="text-align:center; font-weight:bold; margin-bottom:10px;" id="dateStr"></div>
+        
         <div id="staffContainer"></div>
         
         <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report on WhatsApp</button>
         
-        <div class="depot-footer-fixed">VARANASI DEPOT ATTENDANCE</div>
+        <div class="depot-footer-bottom">VARANASI DEPOT ATTENDANCE</div>
     </div>
 </div>
 
@@ -80,7 +90,7 @@
     function checkPin() {
         if (document.getElementById('pinEntry').value === APP_PIN) {
             document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'flex';
             initApp();
         } else {
             alert("Wrong PIN!");
@@ -111,7 +121,6 @@
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('dateStr').innerText = now.toLocaleDateString('en-US', options);
         const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-        
         employees.forEach(name => {
             if (!attendance[name]) attendance[name] = { status: "Present", time: currentTime };
         });
@@ -124,7 +133,6 @@
         employees.forEach(name => {
             const status = attendance[name].status;
             let statusClass = (status === "Absent") ? "card-absent" : (status === "Half-Day") ? "card-halfday" : "card-present";
-
             const card = document.createElement('div');
             card.className = `staff-card ${statusClass}`;
             card.innerHTML = `
@@ -158,8 +166,6 @@
         message += `%0A----------------------------%0A`;
         window.open(`https://wa.me/?text=${message}`, '_blank');
     }
-
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 </script>
 </body>
 </html>
