@@ -1,40 +1,36 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NORTHERN GOODS CARRIER - Attendance</title>
     <style>
-        :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --warning: #f9ab00; --info: #673ab7; }
-        body { font-family: sans-serif; background: #f1f3f4; margin: 0; padding: 15px; color: #3c4043; }
+        :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --warning: #f9ab00; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f3f4; margin: 0; padding: 15px; color: #3c4043; }
         .container { max-width: 450px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
         .firm-header { text-align: center; background: #1a73e8; color: white; padding: 18px; border-radius: 10px 10px 0 0; margin: -20px -20px 20px -20px; }
         .firm-header h1 { margin: 0; font-size: 19px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
         
         .header { text-align: center; border-bottom: 2px solid #e8eaed; margin-bottom: 15px; padding-bottom: 10px; margin-top: 5px; }
-        #dateStr { font-size: 16px; font-weight: bold; color: #202124; text-transform: capitalize; }
+        #dateStr { font-size: 16px; font-weight: bold; color: #202124; }
 
-        .staff-card { border-bottom: 1px solid #f1f3f4; padding: 12px 0; }
-        .staff-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .staff-name { font-weight: 600; font-size: 15px; color: #202124; }
+        .staff-card { border-bottom: 1px solid #f1f3f4; padding: 15px 0; display: flex; flex-direction: column; gap: 10px; }
+        .staff-top { display: flex; justify-content: space-between; align-items: center; }
+        .staff-name { font-weight: 600; font-size: 16px; color: #202124; }
         
-        .time-input { padding: 5px; border: 1px solid #1a73e8; border-radius: 4px; font-size: 13px; color: #1a73e8; font-weight: bold; background: #e8f0fe; width: 90px; outline: none; }
+        .controls-row { display: flex; gap: 10px; align-items: center; }
         
-        .btn-group { display: flex; gap: 4px; }
-        .status-btn { flex: 1; padding: 10px 2px; border: 1px solid #dadce0; border-radius: 6px; cursor: pointer; background: white; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .status-select { flex: 1; padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; font-weight: bold; background: white; cursor: pointer; outline: none; }
+        .status-select.Present { color: var(--success); border-color: var(--success); }
+        .status-select.Absent { color: var(--danger); border-color: var(--danger); }
+        .status-select.Half-Day { color: var(--warning); border-color: var(--warning); }
+        .status-select.OFF { color: #673ab7; border-color: #673ab7; }
 
-        .p-active { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
-        .h-active { background: var(--warning) !important; color: white !important; border-color: var(--warning) !important; }
-        .a-active { background: var(--danger) !important; color: white !important; border-color: var(--danger) !important; }
-        .o-active { background: var(--info) !important; color: white !important; border-color: var(--info) !important; }
-
+        .time-input { padding: 9px; border: 1px solid #1a73e8; border-radius: 6px; font-size: 13px; color: #1a73e8; font-weight: bold; background: #e8f0fe; width: 90px; outline: none; }
+        
         .footer-depot { text-align: center; margin-top: 20px; padding: 10px; color: #5f6368; font-weight: bold; font-size: 14px; border-top: 1px solid #eee; background: #fafafa; }
         .whatsapp-btn { width: 100%; background: #075e54; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        
-        .add-staff-box { display: flex; gap: 5px; margin-bottom: 15px; border: 1px dashed #ccc; padding: 8px; border-radius: 5px; }
-        .add-staff-box input { flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
-        .add-btn { background: #5f6368; color: white; border: none; padding: 0 8px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -50,18 +46,12 @@
 
     <div id="staffContainer"></div>
 
-    <div class="add-staff-box">
-        <input type="text" id="newStaffName" placeholder="Naya naam...">
-        <button class="add-btn" onclick="addNewStaff()">+ ADD</button>
-    </div>
-
     <div class="footer-depot">VARANASI DEPOT</div>
 
     <button class="whatsapp-btn" onclick="sendToWhatsApp()">Share Report on WhatsApp</button>
 </div>
 
 <script>
-    // UPDATED STAFF LIST (Shanu Yadav Removed)
     let employees = [
         "Anand Tripathi",
         "Sachin Yadav",
@@ -77,8 +67,16 @@
 
     function init() {
         const now = new Date();
+        // Changed to English Locale
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('dateStr').innerText = now.toLocaleDateString('hi-IN', options);
+        document.getElementById('dateStr').innerText = now.toLocaleDateString('en-US', options);
+        
+        const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+        employees.forEach(name => {
+            attendance[name] = { status: "Present", time: currentTime };
+        });
+        
         renderList();
     }
 
@@ -86,26 +84,21 @@
         const container = document.getElementById('staffContainer');
         container.innerHTML = '';
         
-        const now = new Date();
-        const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-
         employees.forEach(name => {
-            if (!attendance[name]) {
-                attendance[name] = { status: "Absent", time: currentTime };
-            }
-            
             const card = document.createElement('div');
             card.className = 'staff-card';
             card.innerHTML = `
-                <div class="staff-info">
+                <div class="staff-top">
                     <span class="staff-name">${name}</span>
-                    <input type="time" class="time-input" id="time-${name}" value="${attendance[name].time}" onchange="updateTime('${name}', this.value)">
                 </div>
-                <div class="btn-group">
-                    <button class="status-btn ${attendance[name].status === 'Present' ? 'p-active' : ''}" onclick="mark('${name}', 'Present')">P</button>
-                    <button class="status-btn ${attendance[name].status === 'Half-Day' ? 'h-active' : ''}" onclick="mark('${name}', 'Half-Day')">HD</button>
-                    <button class="status-btn ${attendance[name].status === 'Absent' ? 'a-active' : ''}" onclick="mark('${name}', 'Absent')">A</button>
-                    <button class="status-btn ${attendance[name].status === 'OFF' ? 'o-active' : ''}" onclick="mark('${name}', 'OFF')">OFF</button>
+                <div class="controls-row">
+                    <select class="status-select ${attendance[name].status}" onchange="mark('${name}', this.value)">
+                        <option value="Present" ${attendance[name].status === 'Present' ? 'selected' : ''}>Present</option>
+                        <option value="Half-Day" ${attendance[name].status === 'Half-Day' ? 'selected' : ''}>Half-Day</option>
+                        <option value="Absent" ${attendance[name].status === 'Absent' ? 'selected' : ''}>Absent</option>
+                        <option value="OFF" ${attendance[name].status === 'OFF' ? 'selected' : ''}>OFF</option>
+                    </select>
+                    <input type="time" class="time-input" value="${attendance[name].time}" onchange="updateTime('${name}', this.value)">
                 </div>`;
             container.appendChild(card);
         });
@@ -113,13 +106,10 @@
 
     function updateTime(name, newTime) { attendance[name].time = newTime; }
 
-    function addNewStaff() {
-        const input = document.getElementById('newStaffName');
-        const name = input.value.trim();
-        if (name && !employees.includes(name)) { employees.push(name); renderList(); input.value = ''; }
+    function mark(name, status) { 
+        attendance[name].status = status; 
+        renderList(); 
     }
-
-    function mark(name, status) { attendance[name].status = status; renderList(); }
 
     function sendToWhatsApp() {
         let fName = "NORTHERN GOODS CARRIER";
