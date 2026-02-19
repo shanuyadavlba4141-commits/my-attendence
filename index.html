@@ -154,18 +154,29 @@
         });
     }
 
-    function updateTime(n, v) { attendance[n].time = v; }
-    function updateStatus(n, v) { attendance[n].status = v; renderList(); }
-
     function sendToWhatsApp() {
         let dayStr = document.getElementById('dateStr').innerText;
+        // Header
         let message = `*NORTHERN GOODS CARRIER*%0A*Depot:* VARANASI DEPOT ATTENDANCE%0A*Date:* ${dayStr}%0A----------------------------%0A%0A`;
+        
         employees.forEach(name => {
             let d = attendance[name];
-            let icon = (d.status === "Absent") ? "🔴 " : (d.status === "Half-Day") ? "🟡 " : "";
-            message += `${icon}*${name.toUpperCase()}*: ${d.status.toUpperCase()}${d.status !== 'Absent' ? ' ('+d.time+')' : ''}%0A`;
+            let statusText = d.status.toUpperCase();
+            let tInfo = (d.status === "Present" || d.status === "Half-Day") ? ` (${d.time})` : "";
+            
+            let colorIcon = "";
+            if(d.status === "Absent") colorIcon = "🔴 ";
+            else if(d.status === "Half-Day") colorIcon = "🟡 ";
+            
+            message += `${colorIcon}*${name.toUpperCase()}*: ${statusText}${tInfo}%0A`;
         });
+        
+        // Footer (Yahan humne Varanasi depot add kar diya hai)
+        message += `%0A----------------------------%0A`;
+        message += `*Varanasi depot*`; // Ye line ab message ke niche dikhegi
+        
         window.open(`https://wa.me/?text=${message}`, '_blank');
+    }
     }
 </script>
 </body>
